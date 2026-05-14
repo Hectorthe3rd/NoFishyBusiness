@@ -1,0 +1,369 @@
+# links.txt — Web pages to ingest into the NoFishyBusiness knowledge base
+# ─────────────────────────────────────────────────────────────────────────────
+# Format:  {description: <URL>}
+#
+# Valid categories: fish, plant, chemistry, maintenance, disease, aquascaping, water, substrate, 
+#
+# Lines starting with # are comments and are ignored.
+# Blank lines are also ignored.
+#
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# FRESHWATER FISH (Community, Nano, and Monster)
+# ─────────────────────────────────────────────────────────────────────────────
+{Adonis Pleco: https://en.wikipedia.org/wiki/Acanthicus_adansoni}
+{African Butterfly Fish: https://en.wikipedia.org/wiki/Freshwater_butterflyfish}
+{Agassiz's Dwarf Cichlid: https://en.wikipedia.org/wiki/Apistogramma_agassizii}
+{Albino Corydoras: https://en.wikipedia.org/wiki/Corydoras_aeneus}
+{Altum Angelfish: https://en.wikipedia.org/wiki/Pterophyllum_altum}
+{Amano Fish: https://en.wikipedia.org/wiki/Amano_shrimp}
+{American Flagfish: https://en.wikipedia.org/wiki/Jordanella_floridae}
+{Angelfish: https://en.wikipedia.org/wiki/Pterophyllum_scalare}
+{Apache Trout: https://en.wikipedia.org/wiki/Apache_trout}
+{Archerfish: https://en.wikipedia.org/wiki/Archerfish}
+{Arowana (Silver): https://en.wikipedia.org/wiki/Silver_arowana}
+{Assorted Platy: https://en.wikipedia.org/wiki/Platy_(fish)}
+{Badis Badis: https://en.wikipedia.org/wiki/Badis_badis}
+{Bala Shark: https://en.wikipedia.org/wiki/Bala_shark}
+{Banjo Catfish: https://en.wikipedia.org/wiki/Bunocephalus_coracoideus}
+{Belonesox Belizanus: https://en.wikipedia.org/wiki/Belonesox_belizanus}
+{Betta Fish (Plakat): https://en.wikipedia.org/wiki/Siamese_fighting_fish}
+{Bichir (Senegal): https://en.wikipedia.org/wiki/Senegal_bichir}
+{Black Ghost Knifefish: https://en.wikipedia.org/wiki/Black_ghost_knifefish}
+{Black Kuhli Loach: https://en.wikipedia.org/wiki/Pangio_oblonga}
+{Black Neon Tetra: https://en.wikipedia.org/wiki/Black_neon_tetra}
+{Black Phantom Tetra: https://en.wikipedia.org/wiki/Black_phantom_tetra}
+{Black Ruby Barb: https://en.wikipedia.org/wiki/Pethia_nigrofasciata}
+{Black Skirt Tetra: https://en.wikipedia.org/wiki/Black_skirt_tetra}
+{Blood Parrot Cichlid: https://en.wikipedia.org/wiki/Blood_parrot_cichlid}
+{Bloodfin Tetra: https://en.wikipedia.org/wiki/Bloodfin_tetra}
+{Blue Acara: https://en.wikipedia.org/wiki/Blue_acara}
+{Blue Gularis: https://en.wikipedia.org/wiki/Blue_gularis}
+{Blue Gourami: https://en.wikipedia.org/wiki/Three_spot_gourami}
+{Boesemani Rainbowfish: https://en.wikipedia.org/wiki/Boeseman's_rainbowfish}
+{Bristlenose Pleco: https://en.wikipedia.org/wiki/Ancistrus_cirrhosus}
+{Bumblebee Catfish: https://en.wikipedia.org/wiki/South_American_bumblebee_catfish}
+{Bumblebee Goby: https://en.wikipedia.org/wiki/Brachygobius}
+{Cardinal Tetra: https://en.wikipedia.org/wiki/Cardinal_tetra}
+{Celebes Rainbowfish: https://en.wikipedia.org/wiki/Marosatherina_ladigesi}
+{Celestial Pearl Danio: https://en.wikipedia.org/wiki/Danio_margaritatus}
+{Chakunda Gizzard Shad: https://en.wikipedia.org/wiki/Chakunda_gizzard_shad}
+{Cherry Barb: https://en.wikipedia.org/wiki/Cherry_barb}
+{Chili Rasbora: https://en.wikipedia.org/wiki/Boraras_brigittae}
+{Chocolate Gourami: https://en.wikipedia.org/wiki/Chocolate_gourami}
+{Clown Barb: https://en.wikipedia.org/wiki/Barbodes_everetti}
+{Clown Killifish: https://en.wikipedia.org/wiki/Epiplatys_annulatus}
+{Clown Loach: https://en.wikipedia.org/wiki/Clown_loach}
+{Cockatoo Cichlid: https://en.wikipedia.org/wiki/Apistogramma_cacatuoides}
+{Columbian Tetra: https://en.wikipedia.org/wiki/Hyphessobrycon_columbianus}
+{Congo Tetra: https://en.wikipedia.org/wiki/Congo_tetra}
+{Convict Cichlid: https://en.wikipedia.org/wiki/Convict_cichlid}
+{Crested Bullhead: https://en.wikipedia.org/wiki/Crested_bullhead}
+{Cuvier's Bichir: https://en.wikipedia.org/wiki/Polypterus_senegalus}
+{Datnoid: https://en.wikipedia.org/wiki/Datnioides}
+{Denison Barb: https://en.wikipedia.org/wiki/Denison_barb}
+{Desert Pupfish: https://en.wikipedia.org/wiki/Desert_pupfish}
+{Diamond Tetra: https://en.wikipedia.org/wiki/Diamond_tetra}
+{Discus (Blue): https://en.wikipedia.org/wiki/Discus_(fish)}
+{Dojo Loach: https://en.wikipedia.org/wiki/Pond_loach}
+{Dwarf Chain Loach: https://en.wikipedia.org/wiki/Ambastaia_sidthimunki}
+{Dwarf Gourami: https://en.wikipedia.org/wiki/Dwarf_gourami}
+{Dwarf Neon Rainbowfish: https://en.wikipedia.org/wiki/Melanotaenia_praecox}
+{Electric Blue Hap: https://en.wikipedia.org/wiki/Sciaenochromis_fryeri}
+{Electric Blue Jack Dempsey: https://en.wikipedia.org/wiki/Jack_Dempsey_(fish)}
+{Electric Blue Ram: https://en.wikipedia.org/wiki/Ram_cichlid}
+{Electric Eel: https://en.wikipedia.org/wiki/Electric_eel}
+{Elephantnose Fish: https://en.wikipedia.org/wiki/Gnathonemus_petersii}
+{Emerald Dwarf Rasbora: https://en.wikipedia.org/wiki/Danio_erythromicron}
+{Emperor Tetra: https://en.wikipedia.org/wiki/Emperor_tetra}
+{Endler's Livebearer: https://en.wikipedia.org/wiki/Poecilia_wingei}
+{Exodon Paradoxus: https://en.wikipedia.org/wiki/Exodon_paradoxus}
+{Farlowella Catfish: https://en.wikipedia.org/wiki/Farlowella}
+{Figure 8 Puffer: https://en.wikipedia.org/wiki/Figure_8_puffer}
+{Firemouth Cichlid: https://en.wikipedia.org/wiki/Firemouth_cichlid}
+{Flame Tetra: https://en.wikipedia.org/wiki/Flame_tetra}
+{Flowerhorn Cichlid: https://en.wikipedia.org/wiki/Flowerhorn_cichlid}
+{Frontosa Cichlid: https://en.wikipedia.org/wiki/Cyphotilapia_frontosa}
+{Garden Eel: https://en.wikipedia.org/wiki/Heterocongrinae}
+{German Blue Ram: https://en.wikipedia.org/wiki/Ram_cichlid}
+{Giant Danio: https://en.wikipedia.org/wiki/Giant_danio}
+{Giant Gourami: https://en.wikipedia.org/wiki/Giant_gourami}
+{Glass Catfish: https://en.wikipedia.org/wiki/Kryptopterus_vitreolus}
+{Glowlight Tetra: https://en.wikipedia.org/wiki/Glowlight_tetra}
+{Gold Barb: https://en.wikipedia.org/wiki/Gold_barb}
+{Golden Wonder Killifish: https://en.wikipedia.org/wiki/Aplocheilus_lineatus}
+{Goldfish (Comet): https://en.wikipedia.org/wiki/Comet_(goldfish)}
+{Goldfish (Oranda): https://en.wikipedia.org/wiki/Oranda}
+{Goldfish (Ranchu): https://en.wikipedia.org/wiki/Ranchu}
+{Green Neon Tetra: https://en.wikipedia.org/wiki/Green_neon_tetra}
+{Green Terror Cichlid: https://en.wikipedia.org/wiki/Green_terror}
+{Guppy: https://en.wikipedia.org/wiki/Guppy}
+{Harlequin Rasbora: https://en.wikipedia.org/wiki/Harlequin_rasbora}
+{Hatchetfish (Silver): https://en.wikipedia.org/wiki/Common_hatchetfish}
+{Hillstream Loach: https://en.wikipedia.org/wiki/Sewellia_lineolata}
+{Honey Gourami: https://en.wikipedia.org/wiki/Honey_gourami}
+{Hoplo Catfish: https://en.wikipedia.org/wiki/Megalechis_thoracata}
+{Humphead Cichlid: https://en.wikipedia.org/wiki/Cyphotilapia_frontosa}
+{Indian Glassfish: https://en.wikipedia.org/wiki/Parambassis_ranga}
+{Jack Dempsey Cichlid: https://en.wikipedia.org/wiki/Jack_Dempsey_(fish)}
+{Jaguar Cichlid: https://en.wikipedia.org/wiki/Parachromis_managuensis}
+{Java Loach: https://en.wikipedia.org/wiki/Pangio_oblonga}
+{Jellyfish (Freshwater): https://en.wikipedia.org/wiki/Craspedacusta_sowerbii}
+{Jewel Cichlid: https://en.wikipedia.org/wiki/Jewel_cichlid}
+{Jordan's Catfish: https://en.wikipedia.org/wiki/Ariopsis_seemanni}
+{Julii Corydoras: https://en.wikipedia.org/wiki/Corydoras_julii}
+{Kenyi Cichlid: https://en.wikipedia.org/wiki/Maylandia_lombardoi}
+{Kribensis: https://en.wikipedia.org/wiki/Pelvicachromis_pulcher}
+{Kuhli Loach: https://en.wikipedia.org/wiki/Kuhli_loach}
+{Lace Catfish: https://en.wikipedia.org/wiki/Synodontis_nigriventris}
+{Leaf Fish (Amazon): https://en.wikipedia.org/wiki/Monocirrhus_polyacanthus}
+{Lemon Tetra: https://en.wikipedia.org/wiki/Lemon_tetra}
+{Leopard Bush Fish: https://en.wikipedia.org/wiki/Leopard_bush_fish}
+{Leopard Danio: https://en.wikipedia.org/wiki/Danio_rerio}
+{Lesser Spiny Eel: https://en.wikipedia.org/wiki/Macrognathus_aculeatus}
+{Livingstonii Cichlid: https://en.wikipedia.org/wiki/Nimbochromis_livingstonii}
+{Lyretail Killifish: https://en.wikipedia.org/wiki/Aphyosemion_australe}
+{Madagascar Rainbowfish: https://en.wikipedia.org/wiki/Bedotia_madagascarensis}
+{Malarmo Catfish: https://en.wikipedia.org/wiki/Parauchenoglanis_guttatus}
+{Malawi Eyebiter: https://en.wikipedia.org/wiki/Dimidiochromis_compressiceps}
+{Marbled Hatchetfish: https://en.wikipedia.org/wiki/Marbled_hatchetfish}
+{Masked Julie: https://en.wikipedia.org/wiki/Julidochromis_transcriptus}
+{Medaka Ricefish: https://en.wikipedia.org/wiki/Japanese_rice_fish}
+{Mekong Giant Catfish: https://en.wikipedia.org/wiki/Mekong_giant_catfish}
+{Midas Cichlid: https://en.wikipedia.org/wiki/Midas_cichlid}
+{Molly: https://en.wikipedia.org/wiki/Poecilia_sphenops}
+{Moonlight Gourami: https://en.wikipedia.org/wiki/Moonlight_gourami}
+{Mosey Loach: https://en.wikipedia.org/wiki/Botia_lohachata}
+{Multifasciatus Shell Dweller: https://en.wikipedia.org/wiki/Neolamprologus_multifasciatus}
+{Neon Dwarf Rainbowfish: https://en.wikipedia.org/wiki/Melanotaenia_praecox}
+{Neon Tetra: https://en.wikipedia.org/wiki/Neon_tetra}
+{Nile Tilapia: https://en.wikipedia.org/wiki/Nile_tilapia}
+{Odessa Barb: https://en.wikipedia.org/wiki/Odessa_barb}
+{Oscar Cichlid: https://en.wikipedia.org/wiki/Oscar_(fish)}
+{Otocinclus: https://en.wikipedia.org/wiki/Otocinclus}
+{Pacu: https://en.wikipedia.org/wiki/Pacu}
+{Panda Corydoras: https://en.wikipedia.org/wiki/Corydoras_panda}
+{Panda Garra: https://en.wikipedia.org/wiki/Garra_flavatra}
+{Paradise Fish: https://en.wikipedia.org/wiki/Paradise_fish}
+{Peacock Cichlid: https://en.wikipedia.org/wiki/Aulonocara}
+{Peacock Eel: https://en.wikipedia.org/wiki/Macrognathus_siamensis}
+{Pearl Danio: https://en.wikipedia.org/wiki/Danio_albolineatus}
+{Pearl Gourami: https://en.wikipedia.org/wiki/Pearl_gourami}
+{Pea Puffer: https://en.wikipedia.org/wiki/Dwarf_pufferfish}
+{Penguin Tetra: https://en.wikipedia.org/wiki/Thayeria_boehlkei}
+{Pictus Catfish: https://en.wikipedia.org/wiki/Pictus_catfish}
+{Pike Cichlid: https://en.wikipedia.org/wiki/Crenicichla}
+{Piranha (Red-bellied): https://en.wikipedia.org/wiki/Red-bellied_piranha}
+{Pristella Tetra: https://en.wikipedia.org/wiki/Pristella_maxillaris}
+{Rainbow Shark: https://en.wikipedia.org/wiki/Rainbow_shark}
+{Ram Cichlid: https://en.wikipedia.org/wiki/Ram_cichlid}
+{Reticulated Hillstream Loach: https://en.wikipedia.org/wiki/Sewellia_lineolata}
+{Ricefish: https://en.wikipedia.org/wiki/Oryzias}
+{Roseline Shark: https://en.wikipedia.org/wiki/Denison_barb}
+{Rosy Barb: https://en.wikipedia.org/wiki/Rosy_barb}
+{Rosy Tetra: https://en.wikipedia.org/wiki/Rosy_tetra}
+{Rummy-nose Tetra: https://en.wikipedia.org/wiki/Rummy-nose_tetra}
+{Sailfin Molly: https://en.wikipedia.org/wiki/Sailfin_molly}
+{Serpae Tetra: https://en.wikipedia.org/wiki/Serpae_tetra}
+{Severum Cichlid: https://en.wikipedia.org/wiki/Heros_severus}
+{Shovelnose Catfish: https://en.wikipedia.org/wiki/Sorubim_lima}
+{Siamese Algae Eater: https://en.wikipedia.org/wiki/Siamese_algae_eater}
+{Silver Dollar: https://en.wikipedia.org/wiki/Silver_dollar_(fish)}
+{Snakehead: https://en.wikipedia.org/wiki/Snakehead_(fish)}
+{Sparkling Gourami: https://en.wikipedia.org/wiki/Sparkling_gourami}
+{Spotted Raphael Catfish: https://en.wikipedia.org/wiki/Agamyxis_pectinifrons}
+{Sterba's Corydoras: https://en.wikipedia.org/wiki/Corydoras_sterbai}
+{Sucking Loach: https://en.wikipedia.org/wiki/Gyrinocheilus_aymonieri}
+{Swordtail: https://en.wikipedia.org/wiki/Green_swordtail}
+{T-Barb: https://en.wikipedia.org/wiki/Puntius_lateristriga}
+{Texas Cichlid: https://en.wikipedia.org/wiki/Texas_cichlid}
+{Three-spot Gourami: https://en.wikipedia.org/wiki/Three_spot_gourami}
+{Tiger Barb: https://en.wikipedia.org/wiki/Tiger_barb}
+{Tiger Shovelnose Catfish: https://en.wikipedia.org/wiki/Pseudoplatystoma_fasciatum}
+{Tinfoil Barb: https://en.wikipedia.org/wiki/Tinfoil_barb}
+{Upside-down Catfish: https://en.wikipedia.org/wiki/Synodontis_nigriventris}
+{Uaru Cichlid: https://en.wikipedia.org/wiki/Uaru_amphiacanthoides}
+{Vampire Tetra: https://en.wikipedia.org/wiki/Hydrolycus_scomberoides}
+{Venustus Cichlid: https://en.wikipedia.org/wiki/Nimbochromis_venustus}
+{Weather Loach: https://en.wikipedia.org/wiki/Pond_loach}
+{White Cloud Mountain Minnow: https://en.wikipedia.org/wiki/White_cloud_mountain_minnow}
+{Wolf Cichlid: https://en.wikipedia.org/wiki/Parachromis_dovii}
+{Yellow Lab Cichlid: https://en.wikipedia.org/wiki/Labidochromis_caeruleus}
+{Yoyo Loach: https://en.wikipedia.org/wiki/Botia_lohachata}
+{Zebra Danio: https://en.wikipedia.org/wiki/Zebra_danio}
+{Zebra Loach: https://en.wikipedia.org/wiki/Botia_striata}
+{Zebra Pleco: https://en.wikipedia.org/wiki/Hypancistrus_zebra}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SALTWATER FISH
+# ─────────────────────────────────────────────────────────────────────────────
+{Banggai Cardinalfish: https://en.wikipedia.org/wiki/Banggai_cardinalfish}
+{Blue Tang: https://en.wikipedia.org/wiki/Paracanthurus_hepatus}
+{Clownfish (Ocellaris): https://en.wikipedia.org/wiki/Ocellaris_clownfish}
+{Copperband Butterflyfish: https://en.wikipedia.org/wiki/Copperband_butterflyfish}
+{Damselfish: https://en.wikipedia.org/wiki/Damselfish}
+{Diamond Watchman Goby: https://en.wikipedia.org/wiki/Valenciennea_puellaris}
+{Firefish Goby: https://en.wikipedia.org/wiki/Nemateleotris_magnifica}
+{Flame Angelfish: https://en.wikipedia.org/wiki/Flame_angelfish}
+{Foxface Rabbitfish: https://en.wikipedia.org/wiki/Foxface_rabbitfish}
+{Harlequin Tuskfish: https://en.wikipedia.org/wiki/Harlequin_tuskfish}
+{Hawkfish: https://en.wikipedia.org/wiki/Hawkfish}
+{Humuhumunukunukuapua'a: https://en.wikipedia.org/wiki/Reef_triggerfish}
+{Koran Angelfish: https://en.wikipedia.org/wiki/Pomacanthus_semicirculatus}
+{Lawnmower Blenny: https://en.wikipedia.org/wiki/Salarias_fasciatus}
+{Lionfish (Pterois): https://en.wikipedia.org/wiki/Pterois_volitans}
+{Mandarinfish: https://en.wikipedia.org/wiki/Mandarinfish}
+{Moorish Idol: https://en.wikipedia.org/wiki/Moorish_idol}
+{Naso Tang: https://en.wikipedia.org/wiki/Naso_lituratus}
+{Picasso Triggerfish: https://en.wikipedia.org/wiki/Rhinecanthus_aculeatus}
+{Powder Blue Tang: https://en.wikipedia.org/wiki/Acanthurus_leucosternon}
+{Pyramid Butterflyfish: https://en.wikipedia.org/wiki/Hemitaurichthys_polylepis}
+{Queen Angelfish: https://en.wikipedia.org/wiki/Queen_angelfish}
+{Royal Gramma: https://en.wikipedia.org/wiki/Royal_gramma}
+{Scorpionfish: https://en.wikipedia.org/wiki/Scorpionfish}
+{Six-line Wrasse: https://en.wikipedia.org/wiki/Pseudocheilinus_hexataenia}
+{Snowflake Eel: https://en.wikipedia.org/wiki/Snowflake_moray}
+{Yellow Tang: https://en.wikipedia.org/wiki/Yellow_tang}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SHRIMP (Species and Color Varieties)
+# ─────────────────────────────────────────────────────────────────────────────
+{Amano Shrimp: https://en.wikipedia.org/wiki/Caridina_multidentata}
+{Bamboo Shrimp: https://en.wikipedia.org/wiki/Atyopsis_moluccensis}
+{Bee Shrimp: https://en.wikipedia.org/wiki/Bee_shrimp}
+{Black Rose Shrimp: https://en.wikipedia.org/wiki/Neocaridina_davidi}
+{Blue Velvet Shrimp: https://en.wikipedia.org/wiki/Neocaridina_davidi}
+{Cardinal Shrimp: https://en.wikipedia.org/wiki/Caridina_dennerli}
+{Cherry Shrimp (Red): https://en.wikipedia.org/wiki/Neocaridina_davidi}
+{Crystal Red Shrimp: https://en.wikipedia.org/wiki/Bee_shrimp}
+{Ghost Shrimp: https://en.wikipedia.org/wiki/Palaemonetes_paludosus}
+{Green Jade Shrimp: https://en.wikipedia.org/wiki/Neocaridina_davidi}
+{Orange Sakura Shrimp: https://en.wikipedia.org/wiki/Neocaridina_davidi}
+{Pinto Shrimp: https://en.wikipedia.org/wiki/Caridina_cantonensis}
+{Rili Shrimp: https://en.wikipedia.org/wiki/Neocaridina_davidi}
+{Suluwesi Shrimp: https://en.wikipedia.org/wiki/Caridina_dennerli}
+{Vampire Shrimp: https://en.wikipedia.org/wiki/Atya_gabonensis}
+{Yellow Golden Back Shrimp: https://en.wikipedia.org/wiki/Neocaridina_davidi}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# INVERTEBRATES (Snails, Crabs, Corals)
+# ─────────────────────────────────────────────────────────────────────────────
+{Assassin Snail: https://en.wikipedia.org/wiki/Anentome_helena}
+{Blue Leg Hermit Crab: https://en.wikipedia.org/wiki/Clibanarius_tricolor}
+{Brain Coral: https://en.wikipedia.org/wiki/Brain_coral}
+{Bubble Coral: https://en.wikipedia.org/wiki/Plerogyra_sinuosa}
+{Fiddler Crab: https://en.wikipedia.org/wiki/Fiddler_crab}
+{Fire Coral: https://en.wikipedia.org/wiki/Fire_coral}
+{Hammer Coral: https://en.wikipedia.org/wiki/Euphyllia_ancora}
+{Japanese Trapdoor Snail: https://en.wikipedia.org/wiki/Viviparis_malleatus}
+{Malaysian Trumpet Snail: https://en.wikipedia.org/wiki/Red-rimmed_melania}
+{Mystery Snail: https://en.wikipedia.org/wiki/Pomacea_bridgesii}
+{Nerite Snail: https://en.wikipedia.org/wiki/Neritina_natalensis}
+{Pom Pom Crab: https://en.wikipedia.org/wiki/Lybia}
+{Rabbit Snail: https://en.wikipedia.org/wiki/Tylomelania}
+{Ramshorn Snail: https://en.wikipedia.org/wiki/Planorbidae}
+{Staghorn Coral: https://en.wikipedia.org/wiki/Staghorn_coral}
+{Thai Micro Crab: https://en.wikipedia.org/wiki/Limnopilos_naiyanetri}
+{Zebra Nerite Snail: https://en.wikipedia.org/wiki/Neritina_natalensis}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PLANTS (Freshwater and Marine)
+# ─────────────────────────────────────────────────────────────────────────────
+{Amazon Frogbit: https://en.wikipedia.org/wiki/Limnobium_laevigatum}
+{Amazon Sword: https://en.wikipedia.org/wiki/Echinodorus_grisebachii}
+{Anacharis: https://en.wikipedia.org/wiki/Elodea_canadensis}
+{Anubias Barteri: https://en.wikipedia.org/wiki/Anubias_barteri}
+{Anubias Nana: https://en.wikipedia.org/wiki/Anubias_barteri_var._nana}
+{Baby Tears: https://en.wikipedia.org/wiki/Hemianthus_callitrichoides}
+{Bacopa Monnieri: https://en.wikipedia.org/wiki/Bacopa_monnieri}
+{Banana Plant: https://en.wikipedia.org/wiki/Nymphoides_aquatica}
+{Bucephalandra: https://en.wikipedia.org/wiki/Bucephalandra}
+{Cabomba: https://en.wikipedia.org/wiki/Cabomba_caroliniana}
+{Caulerpa (Sea Grapes): https://en.wikipedia.org/wiki/Caulerpa_lentillifera}
+{Chaetomorpha: https://en.wikipedia.org/wiki/Chaetomorpha}
+{Christmas Moss: https://en.wikipedia.org/wiki/Vesicularia_montagnei}
+{Cryptocoryne Wendtii: https://en.wikipedia.org/wiki/Cryptocoryne_wendtii}
+{Dwarf Hairgrass: https://en.wikipedia.org/wiki/Eleocharis_parvula}
+{Dwarf Sagittaria: https://en.wikipedia.org/wiki/Sagittaria_subulata}
+{Duckweed: https://en.wikipedia.org/wiki/Lemnoideae}
+{Flame Moss: https://en.wikipedia.org/wiki/Taxiphyllum}
+{Glosso (Glossostigma): https://en.wikipedia.org/wiki/Glossostigma_elatinoides}
+{Hornwort: https://en.wikipedia.org/wiki/Ceratophyllum_demersum}
+{Java Fern: https://en.wikipedia.org/wiki/Leptochilus_pteropus}
+{Java Moss: https://en.wikipedia.org/wiki/Taxiphyllum_barbieri}
+{Jungle Vallisneria: https://en.wikipedia.org/wiki/Vallisneria_americana}
+{Ludwigia Repens: https://en.wikipedia.org/wiki/Ludwigia_repens}
+{Mangrove: https://en.wikipedia.org/wiki/Mangrove}
+{Marimo Moss Ball: https://en.wikipedia.org/wiki/Marimo}
+{Marsilea Hirsuta: https://en.wikipedia.org/wiki/Marsilea_hirsuta}
+{Micro Sword: https://en.wikipedia.org/wiki/Lilaeopsis_brasiliensis}
+{Monte Carlo: https://en.wikipedia.org/wiki/Micranthemum_tweediei}
+{Moneywort: https://en.wikipedia.org/wiki/Bacopa_monnieri}
+{Pellia: https://en.wikipedia.org/wiki/Monosolenium_tenerum}
+{Pothos: https://en.wikipedia.org/wiki/Epipremnum_aureum}
+{Red Root Floaters: https://en.wikipedia.org/wiki/Phyllanthus_fluitans}
+{Riccia Fluitans: https://en.wikipedia.org/wiki/Riccia_fluitans}
+{Rotala Rotundifolia: https://en.wikipedia.org/wiki/Rotala_rotundifolia}
+{Salvinia Natans: https://en.wikipedia.org/wiki/Salvinia_natans}
+{Staurogyne Repens: https://en.wikipedia.org/wiki/Staurogyne_repens}
+{Subwassertang: https://en.wikipedia.org/wiki/Lomariopsis_lineata}
+{Tiger Lotus: https://en.wikipedia.org/wiki/Nymphaea_lotus}
+{Water Lettuce: https://en.wikipedia.org/wiki/Pistia}
+{Water Sprite: https://en.wikipedia.org/wiki/Ceratopteris_thalictroides}
+{Water Wisteria: https://en.wikipedia.org/wiki/Hygrophila_difformis}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# HARDSCAPE (Wood, Rocks, Substrates)
+# ─────────────────────────────────────────────────────────────────────────────
+{Ada Aqua Soil: https://en.wikipedia.org/wiki/Aquarium_substrate}
+{African Driftwood: https://en.wikipedia.org/wiki/Driftwood}
+{Aragonite Sand: https://en.wikipedia.org/wiki/Aragonite}
+{Azalea Root (Spiderwood): https://en.wikipedia.org/wiki/Rhododendron}
+{Cholla Wood: https://en.wikipedia.org/wiki/Cylindropuntia}
+{Dragon Stone (Ohko Stone): https://en.wikipedia.org/wiki/Sedimentary_rock}
+{Elephant Skin Stone: https://en.wikipedia.org/wiki/Dolomite_(mineral)}
+{Fluval Stratum: https://en.wikipedia.org/wiki/Aquarium_substrate}
+{Lava Rock: https://en.wikipedia.org/wiki/Igneous_rock}
+{Mopani Wood: https://en.wikipedia.org/wiki/Colophospermum_mopane}
+{Petrified Wood: https://en.wikipedia.org/wiki/Petrified_wood}
+{Pool Filter Sand: https://en.wikipedia.org/wiki/Sand}
+{River Stones: https://en.wikipedia.org/wiki/Cobblestone}
+{Seiryu Stone: https://en.wikipedia.org/wiki/Limestone}
+{Slate: https://en.wikipedia.org/wiki/Slate}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MAINENTANCE (General)
+# ─────────────────────────────────────────────────────────────────────────────
+{The Nitrogen Cycle: https://en.wikipedia.org/wiki/Nitrogen_cycle}    # maintenance_nitrogen cycle wikipedia
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# INFORMATIONAL (Sites, Databases)
+# ─────────────────────────────────────────────────────────────────────────────
+{General info: https://www.fishbase.se/search.php}              #
+{General info: https://www.seriouslyfish.com/}                  # 
+{General info: https://injaf.org/}                              # 
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Hobby sites, forums, discussions.
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stores
+# ─────────────────────────────────────────────────────────────────────────────
+{Shrimp Store: https://shrimpybusiness.com/}
+{Plant Store: https://www.flowgrow.de/db/aquaticplants}
+
+
+

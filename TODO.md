@@ -1,26 +1,17 @@
-# Here are the lists of things to do for this project:
+# Lists of things to do:
 
-## Project Details:
-'''
-Stuff
+TO-DO:
+- EXPAND ON KEYWORDS / LLM USE
+    - Upload documents, links, photos, etc.
 
-
-
-
-'''
+Right now, the `knowledge_base` contains a set number of acceptable input keywords, with pre-planted responses.
 
 
-
-## Self:
-- x
-- 
--
--
--
+- Have the LLM expand on its responses.
+    - 
 
 
-For the AI to do:
-- x
-- x
-- x
-- x
+
+- Add instructions to README.md for closing / stopping the program (frontend + backend)
+    - 
+
