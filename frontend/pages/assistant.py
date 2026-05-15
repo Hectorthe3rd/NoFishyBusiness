@@ -1,74 +1,83 @@
 # frontend/pages/assistant.py
 # ─────────────────────────────────────────────────────────────────────────────
-# AI Assistant page.
-# A chat interface where the user can ask free-form aquarium questions.
-# Conversation history is stored in Streamlit's session_state so the LLM
-# has context from previous messages in the same browser session.
-# The backend runs topic filtering, RAG retrieval, and the OpenAI call.
+# AI Assistant page — real-time streaming chat.
+#
+# Uses the /assistant/stream endpoint which returns a text/plain streaming
+# response. st.write_stream() consumes the chunks and renders them word-by-word
+# as they arrive from the OpenAI API, giving the user live feedback that the
+# system is working.
 # ─────────────────────────────────────────────────────────────────────────────
 
 import streamlit as st
+import requests
 import sys, os
 
-# Add project root to path so frontend.app is importable
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from frontend.app import backend_post   # Shared POST helper
+from frontend.app import BACKEND_URL
 
-# ── Page title ────────────────────────────────────────────────────────────────
 st.title("🤖 AI Assistant")
 st.markdown("Ask any aquarium-related question and get AI-powered answers grounded in the knowledge base.")
 
-# ── Session state initialisation ──────────────────────────────────────────────
-# st.session_state persists across reruns within the same browser session.
-# We use it to store the conversation history so the LLM has context.
+# ── Session state ─────────────────────────────────────────────────────────────
 if "history" not in st.session_state:
-    st.session_state.history = []   # List of {"role": "user"|"assistant", "content": str}
+    st.session_state.history = []
 
 # ── Render existing conversation ──────────────────────────────────────────────
-# Loop through all previous messages and display them in chat bubbles
 for msg in st.session_state.history:
-    role    = msg.get("role", "user")
-    content = msg.get("content", "")
-    with st.chat_message(role):   # "user" shows on the right, "assistant" on the left
-        st.markdown(content)
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
 
 # ── Chat input ────────────────────────────────────────────────────────────────
-# st.chat_input renders a sticky input bar at the bottom of the page.
-# It returns the submitted text (or None if nothing was submitted yet).
 user_message = st.chat_input("Ask an aquarium question...")
 
 # ── Handle new message ────────────────────────────────────────────────────────
 if user_message:
-    # Immediately display the user's message in the chat UI
+    # Show user message immediately
     with st.chat_message("user"):
         st.markdown(user_message)
 
-    # Add the user message to history BEFORE calling the backend so it's
-    # included in the history we send (the backend uses it for context)
     st.session_state.history.append({"role": "user", "content": user_message})
 
-    with st.spinner("Loading..."):
-        # POST to /assistant with the message and the last 10 history items
-        # (10 items = 5 user/assistant pairs = the spec's session memory limit)
-        result = backend_post("/assistant", {
-            "message": user_message,
-            "history": st.session_state.history[-10:]
-        })
+    # Stream the assistant reply word-by-word
+    with st.chat_message("assistant"):
+        reply_placeholder = st.empty()
+        full_reply = ""
 
-    if result:
-        reply             = result.get("reply", "")
-        suggested_section = result.get("suggested_section")   # Optional app section hint
+        try:
+            with requests.post(
+                f"{BACKEND_URL}/assistant/stream",
+                json={
+                    "message": user_message,
+                    "history": st.session_state.history[-10:],
+                },
+                stream=True,
+                timeout=60,
+            ) as resp:
+                if resp.ok:
+                    for chunk in resp.iter_content(chunk_size=None, decode_unicode=True):
+                        if chunk:
+                            full_reply += chunk
+                            # Update the placeholder with accumulated text + cursor
+                            reply_placeholder.markdown(full_reply + "▌")
 
-        # Display the assistant's reply in a chat bubble
-        with st.chat_message("assistant"):
-            st.markdown(reply)
+                    # Final render without cursor
+                    reply_placeholder.markdown(full_reply)
+                else:
+                    try:
+                        err = resp.json()
+                        reply_placeholder.error(f"Error: {err.get('message', 'Unknown error')}")
+                    except Exception:
+                        reply_placeholder.error("An unexpected error occurred. Please try again.")
+                    full_reply = ""
 
-            # If the backend suggested a relevant app section, show it as a tip
-            if suggested_section:
-                st.info(f"💡 Tip: Try the **{suggested_section}** for more details.")
+        except requests.RequestException:
+            reply_placeholder.error("Could not reach the backend. Please ensure it is running.")
+            full_reply = ""
+        except Exception:
+            reply_placeholder.error("The result could not be displayed. Please retry.")
+            full_reply = ""
 
-        # Add the assistant reply to history so future messages have context
-        st.session_state.history.append({"role": "assistant", "content": reply})
-
-        # Keep only the last 10 items (5 pairs) to stay within the token budget
+    # Save to history and trim
+    if full_reply:
+        st.session_state.history.append({"role": "assistant", "content": full_reply})
         st.session_state.history = st.session_state.history[-10:]

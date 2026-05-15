@@ -5,6 +5,8 @@
 # navigation, and renders the home/welcome screen.
 # ─────────────────────────────────────────────────────────────────────────────
 
+import time   # used by the progressive reveal helper
+
 import streamlit as st   # Streamlit — the UI framework that renders the web app
 import requests          # HTTP library used to call the FastAPI backend
 
@@ -120,3 +122,23 @@ Your AI-powered aquarium companion. Select a tool from the sidebar to get starte
 - **Image Scanner** — Identify fish and plants from photos
 - **AI Assistant** — Ask free-form aquarium questions
 """)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Progressive reveal helper
+# ─────────────────────────────────────────────────────────────────────────────
+
+def reveal(render_fn, delay: float = 0.06):
+    """
+    Call render_fn() after a short delay so sections appear one at a time.
+
+    Used by structured-data pages (Species, Maintenance, Setup, Chemistry,
+    Image Scanner) to progressively reveal each section rather than having
+    everything pop up simultaneously.
+
+    Args:
+        render_fn: A zero-argument callable that renders one UI section.
+        delay:     Seconds to wait before rendering. Default 0.06s (60 ms).
+    """
+    time.sleep(delay)
+    render_fn()

@@ -1,9 +1,7 @@
 # frontend/pages/image_scanner.py
 # ─────────────────────────────────────────────────────────────────────────────
-# Image Scanner page.
-# Renders the full Biological Report returned by the backend as Markdown.
-# The report includes: Identification Results, Reasoning, Species Description,
-# Care Summary (with Requirements Table), Health Assessment, and Action Plan.
+# Image Scanner page — with progressive section reveal.
+# The full Biological Report is rendered section-by-section with short delays.
 # ─────────────────────────────────────────────────────────────────────────────
 
 import streamlit as st
@@ -11,7 +9,7 @@ import requests
 import sys, os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from frontend.app import BACKEND_URL
+from frontend.app import BACKEND_URL, reveal
 
 st.title("📷 Image Scanner")
 st.markdown("Upload a photo of a fish or plant to get a full biological report.")
@@ -21,7 +19,6 @@ uploaded_file = st.file_uploader(
 )
 
 if uploaded_file is not None:
-    # Live preview
     st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
 
     if st.button("Scan Image"):
@@ -34,47 +31,56 @@ if uploaded_file is not None:
                 if resp.ok:
                     result = resp.json()
 
-                    # ── Full Biological Report (Markdown) ─────────────────
                     if result.get("report"):
-                        st.markdown(result["report"])
+                        # Split the Markdown report on section headers (##) and
+                        # reveal each section progressively.
+                        import re
+                        sections = re.split(r"(?=^## )", result["report"], flags=re.MULTILINE)
+                        for section in sections:
+                            s = section.strip()
+                            if s:
+                                reveal(lambda s=s: st.markdown(s), delay=0.12)
                     else:
-                        # Fallback to structured display if report field missing
-                        st.subheader("Identification Results")
+                        # Fallback structured display
                         species    = result.get("species_name")
                         confidence = result.get("confidence", "inconclusive")
                         conf_pct   = result.get("confidence_pct")
 
+                        reveal(lambda: st.subheader("Identification Results"), delay=0.08)
                         if species:
-                            conf_label = f"{confidence.capitalize()}"
+                            conf_label = confidence.capitalize()
                             if conf_pct is not None:
                                 conf_label += f" ({conf_pct}%)"
-                            st.markdown(f"**Species:** {species}")
+                            reveal(lambda: st.markdown(f"**Species:** {species}"), delay=0.07)
                             if result.get("scientific_name"):
-                                st.caption(f"*{result['scientific_name']}*")
-                            st.markdown(f"**Confidence:** {conf_label}")
+                                reveal(lambda: st.caption(f"*{result['scientific_name']}*"), delay=0.04)
+                            reveal(lambda: st.markdown(f"**Confidence:** {conf_label}"), delay=0.07)
                         else:
-                            st.markdown("**Species:** Could not be identified (inconclusive)")
+                            reveal(lambda: st.markdown("**Species:** Could not be identified"), delay=0.07)
 
-                        st.subheader("Care Summary")
-                        st.markdown(result.get("care_summary", "N/A"))
+                        reveal(lambda: st.subheader("Care Summary"), delay=0.10)
+                        reveal(lambda: st.markdown(result.get("care_summary", "N/A")), delay=0.08)
 
-                        st.subheader("Health Assessment")
+                        reveal(lambda: st.subheader("Health Assessment"), delay=0.10)
                         health = result.get("health_assessment", {})
-                        st.markdown(f"**Status:** {health.get('status', 'N/A')}")
+                        reveal(lambda: st.markdown(f"**Status:** {health.get('status', 'N/A')}"), delay=0.07)
                         issues = health.get("issues_detected")
                         if issues:
-                            st.markdown("**Issues Detected:**")
+                            reveal(lambda: st.markdown("**Issues Detected:**"), delay=0.06)
                             for issue in issues:
-                                st.markdown(f"- {issue}")
+                                i = issue
+                                reveal(lambda i=i: st.markdown(f"- {i}"), delay=0.06)
                         else:
-                            st.markdown("**Issues Detected:** None")
+                            reveal(lambda: st.markdown("**Issues Detected:** None"), delay=0.06)
 
                         if health.get("recommended_action"):
-                            st.markdown(f"**Recommended Action:** {health['recommended_action']}")
+                            reveal(
+                                lambda: st.markdown(f"**Recommended Action:** {health['recommended_action']}"),
+                                delay=0.07,
+                            )
 
-                    # Captivity note (shown as a warning if present)
                     if result.get("captivity_note"):
-                        st.warning(f"⚠️ {result['captivity_note']}")
+                        reveal(lambda: st.warning(f"⚠️ {result['captivity_note']}"), delay=0.08)
 
                 else:
                     try:

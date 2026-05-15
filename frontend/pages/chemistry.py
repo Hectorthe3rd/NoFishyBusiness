@@ -1,14 +1,8 @@
 # frontend/pages/chemistry.py
 # ─────────────────────────────────────────────────────────────────────────────
-# Chemistry Analyzer page.
-# Accepts natural language descriptions AND/OR a test strip image.
-# Image-only mode: if no text is provided, the backend extracts parameters
-# from the image automatically via vision LLM.
-#
-# Image handling note:
-#   st.file_uploader inside st.form resets on submit, so we read the image
-#   bytes immediately when the file is selected and cache them in session_state.
-#   This ensures the bytes are available when the form is submitted.
+# Chemistry Analyzer page — with progressive section reveal.
+# Image bytes are cached in session_state (outside the form) to survive
+# the Streamlit rerun on form submit.
 # ─────────────────────────────────────────────────────────────────────────────
 
 import streamlit as st
@@ -16,7 +10,7 @@ import base64
 import sys, os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from frontend.app import backend_post
+from frontend.app import backend_post, reveal
 
 st.title("🧪 Chemistry Analyzer")
 st.markdown(
@@ -25,35 +19,24 @@ st.markdown(
 )
 
 # ── Session state for image bytes ─────────────────────────────────────────────
-# We cache the raw bytes outside the form so they survive the submit rerun.
 if "chem_image_bytes" not in st.session_state:
     st.session_state.chem_image_bytes = None
 if "chem_image_name" not in st.session_state:
     st.session_state.chem_image_name = None
 
-# ── Image uploader — OUTSIDE the form so bytes are readable on submit ─────────
+# ── Image uploader — OUTSIDE the form ────────────────────────────────────────
 image_file = st.file_uploader(
     "Upload Test Strip Image (optional)", type=["jpg", "jpeg", "png"],
     key="chem_uploader",
 )
 
-# Read and cache bytes immediately when a file is selected
 if image_file is not None:
     st.session_state.chem_image_bytes = image_file.read()
     st.session_state.chem_image_name  = image_file.name
-    # Live preview
-    st.image(
-        st.session_state.chem_image_bytes,
-        caption=f"📸 {image_file.name}",
-        use_column_width=True,
-    )
-elif image_file is None and st.session_state.chem_image_bytes is not None:
-    # File was cleared — show the cached preview with a note
-    st.image(
-        st.session_state.chem_image_bytes,
-        caption=f"📸 {st.session_state.chem_image_name} (cached)",
-        use_column_width=True,
-    )
+    st.image(st.session_state.chem_image_bytes, caption=f"📸 {image_file.name}", use_column_width=True)
+elif st.session_state.chem_image_bytes is not None:
+    st.image(st.session_state.chem_image_bytes,
+             caption=f"📸 {st.session_state.chem_image_name} (cached)", use_column_width=True)
 
 # ── Input form ────────────────────────────────────────────────────────────────
 with st.form("chemistry_form"):
@@ -67,14 +50,12 @@ with st.form("chemistry_form"):
     )
     submitted = st.form_submit_button("Analyze")
 
-# ── Clear image cache button ──────────────────────────────────────────────────
 if st.session_state.chem_image_bytes is not None:
     if st.button("🗑️ Clear Image"):
         st.session_state.chem_image_bytes = None
         st.session_state.chem_image_name  = None
         st.rerun()
 
-# ── Handle submission ─────────────────────────────────────────────────────────
 if submitted:
     has_text  = bool(description.strip())
     has_image = st.session_state.chem_image_bytes is not None
@@ -84,9 +65,7 @@ if submitted:
     else:
         image_base64 = None
         if has_image:
-            image_base64 = base64.b64encode(
-                st.session_state.chem_image_bytes
-            ).decode("utf-8")
+            image_base64 = base64.b64encode(st.session_state.chem_image_bytes).decode("utf-8")
 
         with st.spinner("Analyzing water chemistry..."):
             result = backend_post("/chemistry", {
@@ -98,26 +77,33 @@ if submitted:
             if "error_type" in result:
                 st.warning(result.get("message", "An error occurred."))
             else:
-                # ── Parameter Analysis ────────────────────────────────────
-                st.subheader("Parameter Analysis")
-                parameters = result.get("parameters", [])
-                if parameters:
-                    for param in parameters:
-                        status = param.get("status", "unknown")
-                        color  = {"safe": "🟢", "caution": "🟡", "danger": "🔴"}.get(status, "⚪")
-                        st.markdown(
-                            f"{color} **{param.get('name', 'N/A')}**: "
-                            f"{param.get('value', 'N/A')} — {status.capitalize()}"
+                reveal(lambda: st.subheader("Parameter Analysis"), delay=0.08)
+
+                for param in result.get("parameters", []):
+                    p = param
+                    status = p.get("status", "unknown")
+                    color  = {"safe": "🟢", "caution": "🟡", "danger": "🔴"}.get(status, "⚪")
+
+                    reveal(
+                        lambda p=p, color=color, status=status: st.markdown(
+                            f"{color} **{p.get('name', 'N/A')}**: "
+                            f"{p.get('value', 'N/A')} — {status.capitalize()}"
+                        ),
+                        delay=0.09,
+                    )
+                    if p.get("science"):
+                        reveal(lambda p=p: st.markdown(f"  *{p['science']}*"), delay=0.05)
+                    if p.get("corrective_action"):
+                        reveal(
+                            lambda p=p: st.markdown(f"  → **Action:** {p['corrective_action']}"),
+                            delay=0.05,
                         )
-                        if param.get("science"):
-                            st.markdown(f"  *{param['science']}*")
-                        if param.get("corrective_action"):
-                            st.markdown(f"  → **Action:** {param['corrective_action']}")
 
-                # Critical interactions warning
                 if result.get("critical_interactions"):
-                    st.error(f"⚠️ **Critical Interaction:** {result['critical_interactions']}")
+                    reveal(
+                        lambda: st.error(f"⚠️ **Critical Interaction:** {result['critical_interactions']}"),
+                        delay=0.08,
+                    )
 
-                # ── Summary ───────────────────────────────────────────────
-                st.subheader("Summary")
-                st.markdown(result.get("summary", "N/A"))
+                reveal(lambda: st.subheader("Summary"), delay=0.10)
+                reveal(lambda: st.markdown(result.get("summary", "N/A")), delay=0.08)

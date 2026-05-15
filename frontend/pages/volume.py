@@ -11,7 +11,7 @@ import streamlit as st
 import sys, os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from frontend.app import backend_post
+from frontend.app import backend_post, reveal
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -238,23 +238,23 @@ if submitted:
         })
 
     if result:
-        st.success("Calculation complete!")
+        reveal(lambda: st.success("Calculation complete!"), delay=0.05)
 
         # ── Results + Tank Diagram side by side ───────────────────────────
         left, right = st.columns([1, 1])
 
         with left:
-            st.metric("Volume", f"{result['volume_gallons']} gallons")
-            st.metric("Weight", f"{result['weight_pounds']} lbs")
+            reveal(lambda: st.metric("Volume", f"{result['volume_gallons']} gallons"), delay=0.08)
+            reveal(lambda: st.metric("Weight", f"{result['weight_pounds']} lbs"), delay=0.08)
 
             if result.get("weight_warning"):
-                st.warning(result["weight_warning"])
+                reveal(lambda: st.warning(result["weight_warning"]), delay=0.08)
 
             if result.get("pro_tip"):
-                st.info(f"💡 **Pro Tip:** {result['pro_tip']}")
+                reveal(lambda: st.info(f"💡 **Pro Tip:** {result['pro_tip']}"), delay=0.10)
 
         with right:
-            # Render the isometric SVG tank diagram
+            reveal(lambda: None, delay=0.05)  # small pause before diagram appears
             import streamlit.components.v1 as components
             svg = _build_tank_svg(length, width, depth, unit)
             components.html(

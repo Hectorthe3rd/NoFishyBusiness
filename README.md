@@ -20,21 +20,31 @@ An AI-assisted aquarium information site, containing various features for the us
 
 ---
 
-## Setup
+## Setup (In an Empty Terminal, or VS Code):
 
-### 0. Clone the Repo
+### 1. Clone the Repo
 
 ```
 git clone https://github.com/Hectorthe3rd/NoFishyBusiness.git
 ```
 
-### 1. Install dependencies
+### 2. Create and Activate a Virtual Environment:
 
-```bash
-pip install -r requirements.txt
+```
+python3 -m venv venv
+
+.\venv\Scripts\Activate.ps1
 ```
 
-### 2. Add your OpenAI API key
+### 3. Install dependencies (Ensure Correct Directory)
+
+```bash
+cd NoFishyBusiness
+
+python3 -m pip install -r requirements.txt
+```
+
+### 4. Add your OpenAI API key
 
 Copy `.env.example` to `.env`:
 
@@ -47,7 +57,7 @@ Open `.env` and replace the placeholder with your real key:
 OPENAI_API_KEY=sk-...
 ```
 
-### 3. Launch the app
+### 5. Launch the app
 
 ### Windows
 

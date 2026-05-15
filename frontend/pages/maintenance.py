@@ -1,16 +1,13 @@
 # frontend/pages/maintenance.py
 # ─────────────────────────────────────────────────────────────────────────────
-# Maintenance Guide page.
-# Shows a HIGH-PRIORITY WARNING banner if incompatible species are detected
-# (e.g. Goldfish + Neon Tetra temperature mismatch).
-# Displays species-specific monthly tasks injected by the backend.
+# Maintenance Guide page — with progressive section reveal.
 # ─────────────────────────────────────────────────────────────────────────────
 
 import streamlit as st
 import sys, os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
-from frontend.app import backend_post
+from frontend.app import backend_post, reveal
 
 st.title("🔧 Maintenance Guide")
 st.markdown("Get a personalized maintenance schedule for your aquarium.")
@@ -38,36 +35,37 @@ if submitted:
         if "message" in result and len(result) == 1:
             st.info(result["message"])
         else:
-            # ── Incompatibility Warning ───────────────────────────────────
-            # Shown first and prominently — this is a HIGH-PRIORITY alert
+            # Incompatibility warning — highest priority, shown first
             if result.get("incompatibility_warning"):
-                st.error(result["incompatibility_warning"])
+                reveal(lambda: st.error(result["incompatibility_warning"]), delay=0.05)
 
-            # ── Bioload Rating ────────────────────────────────────────────
+            # Bioload rating
             bioload = result.get("bioload_rating", "")
             if bioload:
                 badge = {"low": "🟢 Low", "medium": "🟡 Medium", "high": "🔴 High"}.get(bioload, bioload)
-                st.markdown(f"**Bioload Rating:** {badge}")
+                reveal(lambda: st.markdown(f"**Bioload Rating:** {badge}"), delay=0.08)
                 if result.get("bioload_note"):
-                    st.caption(result["bioload_note"])
+                    reveal(lambda: st.caption(result["bioload_note"]), delay=0.04)
 
-            # ── Feeding Schedule ──────────────────────────────────────────
-            st.subheader("Feeding Schedule")
+            # Feeding schedule
+            reveal(lambda: st.subheader("Feeding Schedule"), delay=0.10)
             feeding = result.get("feeding", {})
-            st.markdown(f"**Quantity:** {feeding.get('quantity', 'N/A')}")
-            st.markdown(f"**Frequency:** {feeding.get('frequency', 'N/A')}")
+            reveal(lambda: st.markdown(f"**Quantity:** {feeding.get('quantity', 'N/A')}"), delay=0.08)
+            reveal(lambda: st.markdown(f"**Frequency:** {feeding.get('frequency', 'N/A')}"), delay=0.06)
 
-            # ── Weekly Tasks ──────────────────────────────────────────────
-            st.subheader("Weekly Tasks")
+            # Weekly tasks — each task revealed individually
+            reveal(lambda: st.subheader("Weekly Tasks"), delay=0.10)
             for task in result.get("weekly_tasks", []):
-                st.markdown(f"- {task}")
+                t = task  # capture loop variable
+                reveal(lambda t=t: st.markdown(f"- {t}"), delay=0.07)
 
-            # ── Monthly Tasks ─────────────────────────────────────────────
-            st.subheader("Monthly Tasks")
+            # Monthly tasks
+            reveal(lambda: st.subheader("Monthly Tasks"), delay=0.10)
             for task in result.get("monthly_tasks", []):
-                st.markdown(f"- {task}")
+                t = task
+                reveal(lambda t=t: st.markdown(f"- {t}"), delay=0.07)
 
-            # ── General Advice ────────────────────────────────────────────
+            # Additional advice
             if result.get("advice"):
-                st.subheader("Additional Advice")
-                st.markdown(result["advice"])
+                reveal(lambda: st.subheader("Additional Advice"), delay=0.10)
+                reveal(lambda: st.markdown(result["advice"]), delay=0.08)

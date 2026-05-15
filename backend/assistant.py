@@ -11,11 +11,17 @@ handles scope. This allows greetings, site questions, small talk, and
 typo-laden messages to flow through naturally while the LLM steers the
 conversation back to aquariums when needed.
 
+Provides two public functions:
+  - get_assistant_reply()  — standard JSON response (used by /assistant)
+  - stream_assistant_reply() — generator that yields text chunks (used by
+    /assistant/stream for real-time word-by-word output)
+
 Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 10.4, 11.1, 11.2
 """
 
 import json
 import re as _re
+from typing import Generator
 
 import openai
 
@@ -193,3 +199,117 @@ def get_assistant_reply(message: str, history: list[dict]) -> dict:
         logger.log_error("JSONDecodeError", f"Failed to parse LLM response: {exc}")
         # Fall back to the raw text — still strip any HTML before returning
         return {"reply": _strip_html(raw_text.strip()), "suggested_section": None}
+
+
+# ---------------------------------------------------------------------------
+# Shared message builder (used by both streaming and non-streaming paths)
+# ---------------------------------------------------------------------------
+
+def _build_messages(message: str, history: list[dict]) -> tuple[list[dict], str]:
+    """Build the OpenAI messages array and return (messages, system_prompt).
+
+    Shared between get_assistant_reply() and stream_assistant_reply() so
+    both paths use identical RAG retrieval and prompt construction.
+    """
+    # Build RAG query
+    words = _re.findall(r"[a-z0-9]+", message.lower())
+    keywords = [w for w in words if w not in _STOP_WORDS and len(w) > 2]
+    rag_query = " ".join(keywords) if keywords else message
+
+    context = ""
+    try:
+        records = retrieve(rag_query)
+        if not records and rag_query != message:
+            records = retrieve(message)
+        if records:
+            raw_context = "\n\n".join(record.content for record in records)
+            context = token_budget.truncate_context(raw_context, 2000)
+    except RAGError as exc:
+        logger.log_error("RAGError", str(exc))
+
+    user_ctx = UserContext.guest()
+    system_prompt = PromptFactory.get_prompt(
+        feature_id="assistant",
+        context=context,
+        user=user_ctx,
+    )
+
+    recent_history = history[-10:] if len(history) > 10 else history
+    messages = (
+        recent_history
+        + [{"role": "system", "content": system_prompt}]
+        + [{"role": "user", "content": message}]
+    )
+    return messages, system_prompt
+
+
+# ---------------------------------------------------------------------------
+# Streaming public API
+# ---------------------------------------------------------------------------
+
+def stream_assistant_reply(
+    message: str, history: list[dict]
+) -> Generator[str, None, None]:
+    """Stream the assistant reply token-by-token.
+
+    Yields raw text chunks as they arrive from the OpenAI streaming API.
+    The LLM is instructed to respond in plain Markdown (not JSON) when
+    streaming, since we can't parse partial JSON mid-stream.
+
+    The caller (FastAPI route) wraps this in a StreamingResponse.
+
+    Args:
+        message: The user's current message.
+        history: Conversation history (last 10 items).
+
+    Yields:
+        str chunks of the reply as they arrive.
+    """
+    messages, _ = _build_messages(message, history)
+
+    # For streaming we swap the format instruction to plain Markdown
+    # (no JSON wrapper) so the frontend can render chunks directly.
+    # We patch the last system message to remove the JSON requirement.
+    for i, msg in enumerate(messages):
+        if msg["role"] == "system":
+            content = msg["content"]
+            # Replace the JSON output rule with a plain Markdown instruction
+            content = _re.sub(
+                r"\*\*CRITICAL OUTPUT RULES\*\*.*",
+                (
+                    "**Output format**: Respond in plain Markdown. "
+                    "Do NOT wrap your response in JSON. "
+                    "Do NOT use HTML tags. "
+                    "Use bold, bullets, and line breaks freely."
+                ),
+                content,
+                flags=_re.DOTALL,
+            )
+            messages[i] = {**msg, "content": content}
+            break
+
+    try:
+        stream = _get_client().chat.completions.create(
+            model="gpt-4o-mini",
+            max_tokens=1500,
+            messages=messages,
+            stream=True,
+        )
+        full_text = ""
+        for chunk in stream:
+            delta = chunk.choices[0].delta
+            if delta and delta.content:
+                text = delta.content
+                full_text += text
+                yield text
+
+        # Log after stream completes (usage not available mid-stream)
+        logger.log_llm_call(
+            prompt_tokens=0,   # not available in streaming mode
+            completion_tokens=0,
+            total_tokens=0,
+        )
+
+    except openai.OpenAIError as exc:
+        logger.log_error(type(exc).__name__, str(exc))
+        yield _UNAVAILABLE_REPLY
