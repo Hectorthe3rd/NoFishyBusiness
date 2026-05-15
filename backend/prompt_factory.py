@@ -211,28 +211,55 @@ PROMPT_TEMPLATES: dict[str, dict[str, str]] = {
     },
 
     # ─────────────────────────────────────────────────────────────────────────
-    # FEATURE 2: IMAGE SCANNER — "The Diagnostic Pathologist"
-    # Visual identification, health triage, look-alike species comparison.
+    # FEATURE 2: IMAGE SCANNER — "The Biological Report"
+    # Full structured report: identification, reasoning, species bio, care,
+    # health assessment, and action plan.
     # ─────────────────────────────────────────────────────────────────────────
     "image_scanner": {
         "role": (
-            "You are a **Diagnostic Pathologist** specializing in aquatic organisms. "
-            "Your expertise covers species identification, disease diagnosis from "
-            "visual symptoms, and health triage for fish and aquatic plants."
+            "You are a **Marine Biologist and Aquarium Diagnostician** producing "
+            "professional biological reports for aquarium hobbyists. "
+            "Your reports are structured, precise, and educational."
         ),
         "tone": "{experience_tone}",
         "task": (
-            "Analyse the uploaded image and:\n"
-            "1. **Identify** the species (common name + scientific name if known). "
-            "   Compare against look-alike species in the knowledge base.\n"
-            "2. **Assess health**: describe any visible symptoms (white spots = Ich, "
-            "   fin damage = Fin Rot, bloating = Dropsy, etc.).\n"
-            "3. **Provide care context**: feeding, water parameters, compatibility.\n"
-            "4. If the organism is NOT suitable for home aquariums (endangered, "
-            "   large marine animal, etc.), state this clearly and explain why, "
-            "   but still provide the species information as educational content.\n"
-            "5. If the image does not show an aquatic organism, say so gracefully "
-            "   and do NOT attempt identification."
+            "Analyse the uploaded image and produce a complete biological report "
+            "following the exact structure below. Use Markdown formatting throughout.\n\n"
+            "**Report Structure:**\n\n"
+            "## 🔬 Identification Results\n"
+            "- **Primary Identification**: [Common Name] (*Scientific Name*)\n"
+            "- **Confidence Score**: [0–100]% — [high/medium/low/inconclusive]\n"
+            "- **Look-alike Species**: List 1–2 similar species that could be confused.\n\n"
+            "## 🧠 Reasoning\n"
+            "Explain the visual markers used for identification: fin shape, coloration "
+            "patterns, body proportions, leaf shape (for plants), etc. 2–4 sentences.\n\n"
+            "## 📖 Species Description\n"
+            "A brief 'biography' of the organism: natural habitat, behavior, "
+            "ecological role. 3–5 sentences.\n\n"
+            "## 🏠 Care Summary\n"
+            "- **Containment Status**: e.g. 'Recommended for home aquaria' or "
+            "'Requires pond-scale environment (500+ gallons)' or "
+            "'Not suitable for home aquaria (protected/endangered species)'.\n"
+            "- **Requirements Table**:\n\n"
+            "| Parameter | Value |\n"
+            "|-----------|-------|\n"
+            "| Min Tank Size | X gallons |\n"
+            "| Temperature | X–X°F |\n"
+            "| pH | X–X |\n"
+            "| GH/KH | X–X dGH |\n"
+            "| Diet | [description] |\n"
+            "| Compatibility | [peaceful/semi-aggressive/aggressive] |\n\n"
+            "## 🏥 Health Assessment\n"
+            "Identify any visible signs of illness or injury. Check for: "
+            "Ich (white spots), Fin Rot (ragged fins), Velvet (gold dust), "
+            "Dropsy (pinecone scales), Melting (plant tissue decay), "
+            "physical injuries, or abnormal coloration. "
+            "If the organism appears healthy, state that clearly.\n\n"
+            "## 🚨 Action Plan\n"
+            "If any health issues were detected, provide immediate steps. "
+            "If healthy, provide 1–2 proactive care tips. "
+            "If the image does not show an aquatic organism, state this clearly "
+            "and do NOT attempt identification."
         ),
         "context_header": (
             "**Knowledge Base — Species & Disease Reference**:\n{context}"
@@ -243,7 +270,9 @@ PROMPT_TEMPLATES: dict[str, dict[str, str]] = {
             '  "species_name": "<string or null>",\n'
             '  "scientific_name": "<string or null>",\n'
             '  "confidence": "high" | "medium" | "low" | "inconclusive",\n'
-            '  "care_summary": "<Markdown string, max 5 sentences>",\n'
+            '  "confidence_pct": <integer 0-100>,\n'
+            '  "report": "<full Markdown biological report as a single string>",\n'
+            '  "care_summary": "<brief 1-2 sentence care summary>",\n'
             '  "health_assessment": {{\n'
             '    "issues_detected": ["<string>", ...] | null,\n'
             '    "status": "<Healthy | Disease Detected | Unable to Assess>",\n'
@@ -348,15 +377,16 @@ PROMPT_TEMPLATES: dict[str, dict[str, str]] = {
     # ─────────────────────────────────────────────────────────────────────────
     "setup": {
         "role": (
-            "You are a **Project Planner** for new aquarium setups. "
+            "You are a **Project Planner** for new aquarium and pond setups. "
             "You focus on step-by-step instructions, long-term sustainability, "
-            "and matching recommendations strictly to the user's experience level "
-            "and tank size."
+            "and matching recommendations strictly to the user's experience level, "
+            "tank size, and desired challenge level."
         ),
         "tone": "{experience_tone}",
         "task": (
-            "Generate a setup guide for a {tank_size}-gallon tank for a "
+            "Generate a setup guide for a {tank_size}-gallon setup for a "
             "{experience_level} aquarist.\n\n"
+            "**Challenge/Mode Context**: {challenge_note}\n\n"
             "**Experience-level rules (STRICT)**:\n"
             "- beginner: ONLY recommend hardy, forgiving species (e.g., Zebra Danios, "
             "  Guppies, Java Fern, Anubias). NEVER suggest Discus, Altum Angelfish, or other "
@@ -365,7 +395,11 @@ PROMPT_TEMPLATES: dict[str, dict[str, str]] = {
             "- advanced: May include high-maintenance species, CO2 injection, "
             "  high-tech planted setups, nano-shrimp tanks.\n\n"
             "All fish recommendations must have min_tank_gallons ≤ {tank_size}.\n"
-            "Use ONLY species present in the knowledge base context."
+            "Use ONLY species present in the knowledge base context.\n\n"
+            "For plant zones, explain WHY each plant is placed in that zone "
+            "(e.g. 'Background: Jungle Val — grows tall to compete for light at the surface; "
+            "Foreground: Monte Carlo — low-growing carpet plant that needs high light "
+            "intensity closer to the substrate')."
         ),
         "context_header": (
             "**Knowledge Base — Fish, Plants & Aquascaping**:\n{context}"
@@ -383,10 +417,14 @@ PROMPT_TEMPLATES: dict[str, dict[str, str]] = {
             '  ],\n'
             '  "aquascaping_idea": {{\n'
             '    "substrate": "<string>",\n'
-            '    "hardscape": "<string>",\n'
-            '    "plant_zones": ["<string>", ...],\n'
-            '    "pro_tip": "<1 sentence tip for this experience level>"\n'
-            '  }}\n'
+            '    "hardscape": "<string with specific material recommendation>",\n'
+            '    "plant_zones": [\n'
+            '      {{"zone": "Background|Midground|Foreground|Floating", '
+            '"plant": "<name>", "reason": "<why this zone>"}}\n'
+            '    ],\n'
+            '    "pro_tip": "<1 sentence tip for this experience/challenge level>"\n'
+            '  }},\n'
+            '  "theme": "<e.g. Amazon Blackwater | Iwagumi | Dutch | Pond | Zen>"\n'
             "}}"
         ),
         "honesty": _HONESTY_GUARD,
@@ -559,6 +597,7 @@ class PromptFactory:
             "fish_count":       "unknown",
             "bioload_note":     "Bioload not assessed.",
             "ambiguous_instruction": "",
+            "challenge_note":   "Match recommendations to the user's experience level.",
         }
         if extra:
             variables.update(extra)

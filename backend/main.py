@@ -143,11 +143,11 @@ def health():
 def volume(request: VolumeRequest):
     """Compute aquarium water volume and weight from tank dimensions.
 
-    Accepts length, width, and depth in inches (all must be > 0).
-    Returns volume in US gallons and water weight in pounds.
-    Non-positive values are rejected automatically by Pydantic (HTTP 422).
+    Accepts length, width, and depth in the specified unit (inches, cm, feet, meters).
+    Returns volume in US gallons, water weight in pounds, an optional floor load
+    warning, and a practical pro-tip from the LLM.
     """
-    result = calculate_volume(request.length, request.width, request.depth)
+    result = calculate_volume(request.length, request.width, request.depth, request.unit)
     return result
 
 
@@ -222,15 +222,18 @@ def maintenance(request: MaintenanceRequest):
 
 @app.post("/setup", summary="Setup Guide")
 def setup(request: SetupRequest):
-    """Generate a beginner-friendly tank setup guide.
+    """Generate a tank or pond setup guide.
 
-    Accepts tank size in gallons and experience level (beginner/intermediate/
-    advanced).  Returns fish recommendations, plant recommendations, and an
-    aquascaping idea grounded in the knowledge base.
-
-    On RAG failure returns HTTP 503.  On OpenAI failure returns HTTP 502.
+    Accepts tank size (gallons or liters), experience level, and challenge level.
+    Tanks > 500 gallons automatically pivot to pond/outdoor recommendations.
+    Returns fish recommendations, plant recommendations, and an aquascaping idea.
     """
-    return get_setup_guide(request.tank_gallons, request.experience_level)
+    return get_setup_guide(
+        request.tank_gallons,
+        request.experience_level,
+        request.unit,
+        request.challenge_level,
+    )
 
 
 # ---------------------------------------------------------------------------

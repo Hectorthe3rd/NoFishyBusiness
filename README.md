@@ -20,7 +20,13 @@ An AI-assisted aquarium information site, containing various features for the us
 
 ---
 
-## Setup (one time only)
+## Setup
+
+### 0. Clone the Repo
+
+```
+git clone https://github.com/Hectorthe3rd/NoFishyBusiness.git
+```
 
 ### 1. Install dependencies
 
@@ -41,9 +47,7 @@ Open `.env` and replace the placeholder with your real key:
 OPENAI_API_KEY=sk-...
 ```
 
----
-
-## Launch the app
+### 3. Launch the app
 
 ### Windows
 

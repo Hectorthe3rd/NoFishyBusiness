@@ -3,26 +3,27 @@ backend/tools/chemistry.py
 
 Chemistry Analyzer tool for NoFishyBusiness.
 
-Accepts a text description of water test results (and an optional base64-encoded
-image of a test strip) and returns a danger assessment with corrective actions
-for each recognized water parameter.
+Accepts a text description of water test results and/or a base64-encoded
+image of a test strip, and returns a danger assessment with corrective
+actions for each recognized water parameter.
 
 Flow:
-    1. Run topic_guard.check_topic(description) — return refusal if refused.
-    2. Use regex to detect recognizable parameter values in the description.
-        If none found, return a prompt message (no LLM call).
-    3. Call rag.retrieve(description) for threshold data.
-        Return 503 error if RAG fails.
-    4. Truncate context to 2000 tokens.
-    5. Call OpenAI (gpt-4o-mini, max_tokens=1500).
-        If image_base64 is provided, include it as a vision input.
-    6. Parse and return the structured response.
+    1. If only an image is provided (no text), run a Vision pre-processor
+       LLM call to extract parameter readings from the image first.
+    2. Call rag.retrieve() for threshold data.
+    3. Truncate context to 2000 tokens.
+    4. Call OpenAI (gpt-4o-mini, max_tokens=1500).
+       If image_base64 is provided alongside text, include it as vision input.
+    5. Parse and return the structured response.
+
+Note: The topic guard is intentionally NOT used here. The LLM system prompt
+handles scope — this avoids false refusals when users describe water conditions
+in natural language without using exact aquarium keywords.
 
 Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 10.4, 11.1
 """
 
 import json
-import re
 
 import openai
 from fastapi.responses import JSONResponse
@@ -31,7 +32,6 @@ from backend import logger, token_budget
 from backend.models import UserContext
 from backend.prompt_factory import PromptFactory
 from backend.rag import RAGError, retrieve
-from backend.topic_guard import check_topic
 
 
 # ---------------------------------------------------------------------------
@@ -48,27 +48,61 @@ def _get_client() -> openai.OpenAI:
         _client = openai.OpenAI()
     return _client
 
+
 # ---------------------------------------------------------------------------
-# Parameter detection regex — kept here for the input validation gate
+# Vision pre-processor — extract parameters from image when no text given
 # ---------------------------------------------------------------------------
 
-_PARAM_PATTERNS = [
-    re.compile(r"\bammonia\b.*?\d+(?:\.\d+)?", re.IGNORECASE),
-    re.compile(r"\bnitrite\b.*?\d+(?:\.\d+)?", re.IGNORECASE),
-    re.compile(r"\bnitrate\b.*?\d+(?:\.\d+)?", re.IGNORECASE),
-    re.compile(r"\bph\b.*?\d+(?:\.\d+)?", re.IGNORECASE),
-    re.compile(r"\btemperature\b.*?\d+(?:\.\d+)?", re.IGNORECASE),
-    re.compile(r"\d+(?:\.\d+)?\s*(?:ppm|mg/l)", re.IGNORECASE),
-    re.compile(r"\d+(?:\.\d+)?\s*(?:°f|degrees?\s*f\b)", re.IGNORECASE),
-]
+def _extract_params_from_image(image_base64: str) -> str:
+    """Use the vision API to extract water parameter readings from a test strip image.
 
+    Returns a text description of the detected parameters (e.g.
+    "ammonia: 0.5 ppm, nitrite: 0 ppm, pH: 7.2, temperature: 78°F")
+    that can then be passed to the main analysis flow.
 
-def _has_parameter_values(text: str) -> bool:
-    """Return True if *text* contains at least one recognizable parameter value."""
-    for pattern in _PARAM_PATTERNS:
-        if pattern.search(text):
-            return True
-    return False
+    Returns an empty string if extraction fails.
+    """
+    try:
+        response = _get_client().chat.completions.create(
+            model="gpt-4o-mini",
+            max_tokens=300,
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        "You are a water chemistry test strip reader. "
+                        "Look at the image and extract all visible water parameter readings. "
+                        "Return ONLY a plain text description of the readings you can see, "
+                        "e.g. 'ammonia: 0.5 ppm, nitrite: 0 ppm, pH: 7.2, temperature: 78°F'. "
+                        "If you cannot read a parameter clearly, omit it. "
+                        "If the image does not show a water test strip or test kit, "
+                        "return: 'No water test parameters detected in image.'"
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "image_url",
+                            "image_url": {"url": f"data:image/jpeg;base64,{image_base64}"},
+                        },
+                        {"type": "text", "text": "Extract the water parameter readings from this test strip image."},
+                    ],
+                },
+            ],
+        )
+        usage = response.usage
+        if usage:
+            logger.log_llm_call(
+                prompt_tokens=usage.prompt_tokens,
+                completion_tokens=usage.completion_tokens,
+                total_tokens=usage.total_tokens,
+            )
+        return response.choices[0].message.content or ""
+    except openai.OpenAIError as exc:
+        logger.log_error("VisionPreProcessorError", str(exc))
+        return ""
+
 
 # ---------------------------------------------------------------------------
 # Public API
@@ -79,7 +113,8 @@ def analyze_chemistry(description: str, image_base64: str | None) -> dict | JSON
     """Analyze water chemistry parameters from a text description and optional image.
 
     Args:
-        description:   Text description of water test results.
+        description:   Text description of water test results. May be empty
+                       if image_base64 is provided (image-only mode).
         image_base64:  Optional base64-encoded JPEG/PNG image of a test strip.
 
     Returns:
@@ -87,51 +122,48 @@ def analyze_chemistry(description: str, image_base64: str | None) -> dict | JSON
         :class:`fastapi.responses.JSONResponse` with an appropriate error
         status code and body on failure.
     """
-    # 1. Topic guard ----------------------------------------------------------
-    topic_result = check_topic(description)
-    if topic_result.status == "refused":
-        return JSONResponse(
-            status_code=200,
-            content={
-                "message": topic_result.message,
-                "error_type": "topic_refused",
-            },
-        )
-    if topic_result.status == "error":
-        return JSONResponse(
-            status_code=503,
-            content={
-                "message": topic_result.message,
-                "error_type": "topic_error",
-            },
-        )
+    effective_description = description.strip() if description else ""
 
-    # 2. Parameter detection --------------------------------------------------
-    # If no image is provided, check for recognizable parameter values OR
-    # aquarium-related keywords. Free-form sentences like "my shrimp seem
-    # stressed, ammonia might be high" are valid even without exact numbers.
-    if not image_base64 and not _has_parameter_values(description):
-        # Check if the description at least mentions chemistry-related terms
-        chemistry_terms = re.compile(
-            r"\b(ammonia|nitrite|nitrate|ph|temperature|hardness|oxygen|"
-            r"ppm|water|tank|fish|shrimp|sick|stressed|dying|cloudy|smell)\b",
-            re.IGNORECASE
-        )
-        if not chemistry_terms.search(description):
+    # 1. Image-only mode: extract parameters from image first ----------------
+    if not effective_description and image_base64:
+        extracted = _extract_params_from_image(image_base64)
+        if extracted and "No water test parameters" not in extracted:
+            effective_description = extracted
+        else:
+            # Could not extract anything useful from the image
             return JSONResponse(
                 status_code=200,
                 content={
                     "message": (
-                        "Please describe your water conditions or mention specific "
-                        "parameters (e.g., ammonia, pH, temperature) for analysis."
+                        "Could not detect water parameter readings in the uploaded image. "
+                        "Please ensure the image clearly shows a test strip or test kit result, "
+                        "or describe your water parameters in the text field."
                     ),
                     "error_type": "no_parameters",
                 },
             )
 
+    # 2. No input at all ------------------------------------------------------
+    if not effective_description and not image_base64:
+        return JSONResponse(
+            status_code=200,
+            content={
+                "message": (
+                    "Please describe your water conditions or upload a test strip image. "
+                    "You can use natural language — for example: "
+                    "'my water is a bit cloudy and the pH seems high' or "
+                    "'ammonia 0.5 ppm, nitrite 0, pH 7.2, temp 78°F'."
+                ),
+                "error_type": "no_parameters",
+            },
+        )
+
     # 3. RAG retrieval --------------------------------------------------------
     try:
-        records = retrieve(description)
+        records = retrieve(effective_description)
+        if not records:
+            # Broaden to chemistry category if description-based query returns nothing
+            records = retrieve("water chemistry ammonia nitrite nitrate pH thresholds")
     except RAGError as exc:
         logger.log_error("RAGError", str(exc))
         return JSONResponse(
@@ -146,9 +178,6 @@ def analyze_chemistry(description: str, image_base64: str | None) -> dict | JSON
     raw_context = "\n\n".join(record.content for record in records) if records else ""
     context = token_budget.truncate_context(raw_context, 2000)
 
-    # Use PromptFactory "chemistry" persona — the Laboratory Analyst.
-    # This prompt explains chemical interactions (e.g. pH/ammonia relationship)
-    # rather than just classifying numbers.
     system_prompt = PromptFactory.get_prompt(
         feature_id="chemistry",
         context=context,
@@ -157,11 +186,12 @@ def analyze_chemistry(description: str, image_base64: str | None) -> dict | JSON
 
     # 5. Build messages array -------------------------------------------------
     user_content: list[dict] = [
-        {"type": "text", "text": description},
+        {"type": "text", "text": effective_description},
     ]
 
+    # Include the original image as additional vision context if provided
+    # (even when we already extracted text from it — the LLM can cross-reference)
     if image_base64:
-        # Include the image as a vision input (data URL format)
         user_content.append(
             {
                 "type": "image_url",
@@ -205,7 +235,6 @@ def analyze_chemistry(description: str, image_base64: str | None) -> dict | JSON
     # 8. Parse and return the JSON response -----------------------------------
     raw_text = response.choices[0].message.content or ""
 
-    # Strip markdown code fences if the model wraps the JSON
     stripped = raw_text.strip()
     if stripped.startswith("```"):
         lines = stripped.splitlines()

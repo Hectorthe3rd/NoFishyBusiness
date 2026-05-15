@@ -94,14 +94,20 @@ class KBRecord(BaseModel):
 # ---------------------------------------------------------------------------
 
 class VolumeRequest(BaseModel):
-    length: float = Field(gt=0, description="Tank length in inches")
-    width: float = Field(gt=0, description="Tank width in inches")
-    depth: float = Field(gt=0, description="Water depth in inches")
+    length: float = Field(gt=0, description="Tank length in the chosen unit")
+    width: float = Field(gt=0, description="Tank width in the chosen unit")
+    depth: float = Field(gt=0, description="Water depth in the chosen unit")
+    unit: str = Field(
+        default="inches",
+        description="Input unit: 'inches', 'cm', 'feet', or 'meters'",
+        pattern="^(inches|cm|feet|meters)$",
+    )
 
 
 class VolumeResponse(BaseModel):
     volume_gallons: float
     weight_pounds: float
+    weight_warning: Optional[str] = None
 
 
 # ---------------------------------------------------------------------------
@@ -127,8 +133,18 @@ class MaintenanceRequest(BaseModel):
 # ---------------------------------------------------------------------------
 
 class SetupRequest(BaseModel):
-    tank_gallons: float = Field(gt=0, le=500)
+    tank_gallons: float = Field(gt=0, le=2000)
     experience_level: str = Field(pattern="^(beginner|intermediate|advanced)$")
+    unit: str = Field(
+        default="gallons",
+        description="Input unit: 'gallons' or 'liters'",
+        pattern="^(gallons|liters)$",
+    )
+    challenge_level: str = Field(
+        default="intermediate",
+        description="Desired challenge level: 'basic', 'intermediate', or 'advanced'",
+        pattern="^(basic|intermediate|advanced)$",
+    )
 
 
 # ---------------------------------------------------------------------------

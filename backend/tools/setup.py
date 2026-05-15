@@ -4,7 +4,14 @@ backend/tools/setup.py
 Setup Guide tool for NoFishyBusiness.
 
 Provides beginner-friendly fish, plant, and aquascaping recommendations for a
-new aquarium based on tank size and experience level.
+new aquarium based on tank size, experience level, and challenge level.
+
+Enhancements:
+  - Unit toggle: accepts gallons or liters (converts to gallons before processing).
+  - Pond logic: tanks > 500 gallons pivot to outdoor/pond species.
+  - Challenge level: "basic" / "intermediate" / "advanced" — cross-referenced
+    with experience_level to produce the right recommendation style.
+  - Tank size expanded to 2000 gallons.
 
 Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 11.1
 """
@@ -20,6 +27,12 @@ from backend import token_budget
 from backend.models import UserContext
 from backend.prompt_factory import PromptFactory
 from backend.rag import RAGError, retrieve
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+
+_LITERS_TO_GALLONS = 0.264172   # 1 liter = 0.264172 US gallons
 
 # ---------------------------------------------------------------------------
 # OpenAI client (lazy-initialised once)
@@ -42,7 +55,12 @@ def _get_client() -> openai.OpenAI:
 # ---------------------------------------------------------------------------
 
 
-def get_setup_guide(tank_gallons: float, experience_level: str) -> dict:
+def get_setup_guide(
+    tank_gallons: float,
+    experience_level: str,
+    unit: str = "gallons",
+    challenge_level: str = "intermediate",
+) -> dict:
     """Return beginner fish, plant, and aquascaping recommendations.
 
     Workflow:
@@ -75,12 +93,26 @@ def get_setup_guide(tank_gallons: float, experience_level: str) -> dict:
     from fastapi.responses import JSONResponse  # local import to avoid circular
 
     # ------------------------------------------------------------------
-    # 1. RAG retrieval — try multiple query angles
+    # 0. Unit conversion — liters → gallons
     # ------------------------------------------------------------------
-    query = "beginner fish plant aquascaping setup"
+    if unit == "liters":
+        tank_gallons = round(tank_gallons * _LITERS_TO_GALLONS, 2)
+
+    # ------------------------------------------------------------------
+    # 1. Determine mode: pond (>500 gal) vs aquarium
+    # ------------------------------------------------------------------
+    is_pond = tank_gallons > 500
+
+    # ------------------------------------------------------------------
+    # 2. RAG retrieval — try multiple query angles
+    # ------------------------------------------------------------------
+    if is_pond:
+        query = "koi pond outdoor goldfish water lily pond setup"
+    else:
+        query = "beginner fish plant aquascaping setup"
+
     try:
         records = retrieve(query, top_k=3)
-        # Fallback: try individual category queries if combined returns nothing
         if not records:
             records = retrieve("fish beginner easy", top_k=3)
         if not records:
@@ -118,10 +150,35 @@ def get_setup_guide(tank_gallons: float, experience_level: str) -> dict:
     # ------------------------------------------------------------------
     # 4. Build system prompt via PromptFactory — "The Project Planner"
     # ------------------------------------------------------------------
-    # The experience_level is passed as a UserContext so the PromptFactory
-    # can inject the correct tone modifier AND the setup template uses it
-    # to enforce strict species filtering (no Discus for beginners, etc.)
     user_ctx = UserContext.from_experience_level(experience_level)
+
+    # Build a challenge context note for the prompt
+    if is_pond:
+        challenge_note = (
+            f"This is a POND setup ({tank_gallons:.0f} gallons). "
+            "Recommend outdoor/pond species: Koi, Comet Goldfish, Water Lilies, "
+            "Lotus, and other pond-appropriate plants. "
+            "Focus on filtration capacity, predator protection, and seasonal care."
+        )
+    elif experience_level == "advanced" and challenge_level == "basic":
+        challenge_note = (
+            "The user is an ADVANCED hobbyist seeking a BASIC/ZEN setup. "
+            "Recommend low-maintenance, visually clean setups — "
+            "e.g. a simple Iwagumi with Anubias, or a single-species Betta tank. "
+            "Emphasize simplicity and elegance over complexity."
+        )
+    elif experience_level in ("beginner", "intermediate") and challenge_level == "advanced":
+        challenge_note = (
+            f"The user is {experience_level.upper()} but wants a CHALLENGING setup. "
+            "Recommend a high-tech planted tank with CO2 injection, "
+            "demanding species (e.g. Discus, Altum Angelfish, Crystal Red Shrimp), "
+            "and specialty substrates. Include a clear warning about the difficulty."
+        )
+    else:
+        challenge_note = (
+            f"Match recommendations to {experience_level.upper()} experience "
+            f"with {challenge_level.upper()} challenge level."
+        )
 
     system_prompt = PromptFactory.get_prompt(
         feature_id="setup",
@@ -130,12 +187,14 @@ def get_setup_guide(tank_gallons: float, experience_level: str) -> dict:
         extra={
             "tank_size":        str(int(tank_gallons)),
             "experience_level": experience_level,
+            "challenge_note":   challenge_note,
         },
     )
 
     user_message = (
-        f"Generate a setup guide for a {tank_gallons}-gallon tank "
-        f"for a {experience_level} aquarist."
+        f"Generate a setup guide for a {tank_gallons:.0f}-gallon "
+        f"{'pond' if is_pond else 'tank'} "
+        f"for a {experience_level} aquarist (challenge level: {challenge_level})."
     )
 
     # ------------------------------------------------------------------
